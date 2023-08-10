@@ -7,7 +7,7 @@ from tqdm import tqdm
 from requests.exceptions import RequestException
 
 """
-e-hen 抓取学习
+e-hentai 抓取学习
 """
 
 # 定义请求的头部信息
