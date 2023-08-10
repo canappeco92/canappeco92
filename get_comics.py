@@ -1,8 +1,7 @@
+import os
 import math
 import re
-
 import requests
-import os
 from bs4 import BeautifulSoup
 from tqdm import tqdm
 from requests.exceptions import RequestException
@@ -10,11 +9,13 @@ from requests.exceptions import RequestException
 """
 e-hen 抓取学习
 """
+
 # 定义请求的头部信息
 headers = {
     'User-Agent': 'Mozilla/5.0 (Windows NT 6.3; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/52.0.2743.82 Safari/537.36',
     'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8',
-    'Upgrade-Insecure-Requests': '1'}
+    'Upgrade-Insecure-Requests': '1'
+}
 
 # 创建一个会话，这样我们就可以在多个请求间复用同一个TCP连接
 session = requests.Session()
@@ -24,9 +25,9 @@ session.headers.update(headers)
 def save_file(url, path):
     """
     下载并保存文件
-    :param url:
-    :param path:
-    :return:
+    :param url: 文件的URL
+    :param path: 文件保存的路径
+    :return: 下载是否成功
     """
     try:
         response = session.get(url)
@@ -42,10 +43,10 @@ def save_file(url, path):
 def get_website(url, title, output_dir):
     """
     获取网页，并保存所有图片
-    :param url:
-    :param title:
-    :param output_dir:
-    :return:
+    :param url: 网页的URL
+    :param title: 漫画的标题
+    :param output_dir: 漫画保存的目录
+    :return: None
     """
     response = session.get(url)
     soup = BeautifulSoup(response.text, 'html.parser')
@@ -64,8 +65,8 @@ def get_website(url, title, output_dir):
 def get_pic_url(url):
     """
     从网页中解析出图片的URL
-    :param url:
-    :return:
+    :param url: 网页的URL
+    :return: 图片的URL
     """
     response = session.get(url)
     soup = BeautifulSoup(response.text, 'html.parser')
@@ -76,13 +77,8 @@ def get_pic_url(url):
 def sanitize_filename(filename: str) -> str:
     """
     对输入的文件名进行清洗，将不符合Windows文件命名规则的字符替换为下划线。
-
-    参数:
-        filename (str): 需要清洗的原始文件名字符串。
-
-    返回:
-        str: 清洗后的文件名字符串。
-
+    :param filename: 需要清洗的原始文件名字符串
+    :return: 清洗后的文件名字符串
     """
 
     # Windows系统不允许在文件名中使用的字符
@@ -100,19 +96,18 @@ def sanitize_filename(filename: str) -> str:
     return filename
 
 
-# 菜单函数，负责处理用户输入的URL，然后开始下载
 def start(url, root_dir):
     """
-    开始
-    :param url: ehentai漫画详情页面
+    开始下载漫画
+    :param url: e-hentai漫画详情页面的URL
     :param root_dir: 本地保存目录地址
-    :return:
+    :return: None
     """
     if not url.startswith('https://e-hentai.org/g/'):
-        print('Oh,it is not an e-hentai comic url,please enter again\n')
+        print('Oh, it is not an e-hentai comic URL, please enter again\n')
         return
 
-    print('--OK,getting information--')
+    print('--OK, getting information--')
     try:
         response = session.get(url)
         soup = BeautifulSoup(response.text, 'html.parser')
@@ -124,7 +119,7 @@ def start(url, root_dir):
         output_dir = os.path.join(root_dir, title)  # 用用户提供的根目录和标题合并，得到输出目录
         os.makedirs(output_dir, exist_ok=True)
         # todo 保存封面
-        output_dir = output_dir+f'/_Chapter/'
+        output_dir = output_dir + f'/_Chapter/'
         os.makedirs(output_dir, exist_ok=True)
         # 网页每页40张图片 计算网页数量
         pages = int(pages)
@@ -148,4 +143,4 @@ def start(url, root_dir):
 root_dir = "F:/comics/"
 # 用户输入的URL
 url = ""
-start(url, root_dir)  # 调用menu函数开始处理用户输入的URL
+start(url, root_dir)
